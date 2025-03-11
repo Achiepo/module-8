@@ -1,103 +1,220 @@
-import Image from "next/image";
+"use client";
+import React, { useState } from "react";
+import { ChartPie, CreditCard, TrendingUp, Users, AlertCircle, Send, ChevronRight } from "lucide-react";
+import Page from "@/components/paiement";
 
-export default function Home() {
+
+// Data pour le graphique des revenus
+const data = [
+  { name: "Jan", revenue: 4000 },
+  { name: "Fév", revenue: 3000 },
+  { name: "Mar", revenue: 2000 },
+  { name: "Avr", revenue: 2780 },
+  { name: "Mai", revenue: 1890 },
+  { name: "Juin", revenue: 2390 },
+  { name: "Juil", revenue: 3490 },
+  { name: "Août", revenue: 4000 },
+  { name: "Sep", revenue: 5000 },
+  { name: "Oct", revenue: 4500 },
+  { name: "Nov", revenue: 5200 },
+  { name: "Déc", revenue: 6000 },
+];
+
+const periods = ["Jour", "Semaine", "Mois", "Année"];
+
+const unpaidInvoices = [
+  { id: 1, patient: "Thomas Bernard", service: "Radiologie", amount: 250, dueDate: "2023-06-01", daysPast: 2 },
+  { id: 2, patient: "Claire Dupont", service: "Consultation spécialiste", amount: 120, dueDate: "2023-05-25", daysPast: 8 },
+  { id: 3, patient: "Michel Rousseau", service: "Tests laboratoire", amount: 85, dueDate: "2023-05-15", daysPast: 18 },
+];
+
+const Index = () => {
+  const [activePeriod, setActivePeriod] = useState("Mois");
+
+  const handleSendReminder = (id: number) => {
+    alert(`Rappel envoyé pour la facture #${id}`);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <><div className="min-h-screen bg-gray-50 flex flex-col">
+      <main className="flex-1 container px-4 md:px-6 pb-12 max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Gestion de Facturation</h1>
+            <p className="text-gray-500 mt-1">Automatisez le suivi des paiements et des finances</p>
+          </div>
+        </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        {/* Cartes Statistiques */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="flex items-center mb-4">
+              <TrendingUp className="h-6 w-6 text-green-500" />
+              <h2 className="ml-2 text-xl font-semibold text-gray-900">Revenus ce mois</h2>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">24 500 FCFA</p>
+            <p className="text-gray-500">125 transactions</p>
+            <div className="mt-4 text-green-500">
+              <span>+12%</span> par rapport au mois dernier
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="flex items-center mb-4">
+              <CreditCard className="h-6 w-6 text-red-500" />
+              <h2 className="ml-2 text-xl font-semibold text-gray-900">Factures en attente</h2>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">3 450 FCFA</p>
+            <p className="text-gray-500">8 factures impayées</p>
+            <div className="mt-4 text-red-500">
+              <span>-2%</span> par rapport au mois dernier
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="flex items-center mb-4">
+              <Users className="h-6 w-6 text-blue-500" />
+              <h2 className="ml-2 text-xl font-semibold text-gray-900">Nouveaux patients</h2>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">35</p>
+            <p className="text-gray-500">Ce mois-ci</p>
+            <div className="mt-4 text-blue-500">
+              <span>+8</span> par rapport au mois dernier
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="flex items-center mb-4">
+              <ChartPie className="h-6 w-6 text-yellow-500" />
+              <h2 className="ml-2 text-xl font-semibold text-gray-900">Taux de recouvrement</h2>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">92%</p>
+            <p className="text-gray-500">Objectif: 95%</p>
+            <div className="mt-4 text-yellow-500">
+              <span>+3%</span> par rapport au mois dernier
+            </div>
+          </div>
+        </div>
+
+        {/* Graphique des Revenus et Factures Impayées sur la même ligne */}
+        <div className="flex gap-6 mb-8">
+          {/* Graphique des Revenus */}
+          <div className="flex-1 p-6 bg-white shadow-lg rounded-lg">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-xl font-semibold text-gray-900">Évolution des revenus</h3>
+              <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+                {periods.map((period) => (
+                  <button
+                    key={period}
+                    onClick={() => setActivePeriod(period)}
+                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${activePeriod === period
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-500 hover:text-gray-700"}`}
+                  >
+                    {period}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Graphique en aire */}
+            <div className="h-[300px] w-full">
+              <svg width="100%" height="100%" viewBox="0 0 500 300">
+                {/* Remplissage de l'aire */}
+                <path
+                  fill="rgba(14, 165, 233, 0.3)"
+                  d="M0 250 L40 240 L80 210 L120 180 L160 190 L200 230 L240 240 L280 250 L320 230 L360 200 L400 180 L440 160 L480 130 L500 120 L500 300 L0 300 Z" />
+                {/* Contour du graphique */}
+                <path
+                  fill="none"
+                  stroke="#0ea5e9"
+                  strokeWidth="2"
+                  d="M0 250 L40 240 L80 210 L120 180 L160 190 L200 230 L240 240 L280 250 L320 230 L360 200 L400 180 L440 160 L480 130 L500 120" />
+                {/* Mois */}
+                <g className="text-gray-500 text-xs">
+                  {data.map((point, index) => (
+                    <text key={index} x={40 + index * 40} y="270" fill="gray" textAnchor="middle">
+                      {point.name}
+                    </text>
+                  ))}
+                </g>
+                {/* Valeurs de l'axe des ordonnées */}
+                <g className="text-gray-500 text-xs">
+                  {Array.from({ length: 6 }, (_, i) => 1000 * i).map((value, index) => (
+                    <text
+                      key={index}
+                      x="10"
+                      y={250 - index * 30}
+                      fill="gray"
+                      transform="rotate(270 10 250)"
+                      textAnchor="middle"
+                    >
+                      {value}K
+                    </text>
+                  ))}
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          {/* Section des Factures Impayées */}
+          <div className="flex-1 p-6 bg-white shadow-lg rounded-lg">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-xl font-semibold text-gray-900">
+                <AlertCircle className="h-5 w-5 text-amber-500" />
+                Factures impayées
+              </h3>
+              <button className="px-3 py-1 text-xs font-medium bg-blue-500 text-white rounded-lg">
+                Voir toutes les factures
+              </button>
+            </div>
+
+            {/* Liste des factures impayées */}
+            <div className="space-y-4">
+              {unpaidInvoices.map((invoice) => (
+                <div
+                  key={invoice.id}
+                  className="p-4 border-l-4 border-amber-400 hover:shadow-md transition-all rounded-lg"
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="flex-1">
+                      <div className="flex items-center">
+                        <h4 className="font-medium text-gray-900">{invoice.patient}</h4>
+                        <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-800">
+                          {invoice.daysPast} jours de retard
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {invoice.service} - {invoice.amount} FCFA
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleSendReminder(invoice.id)}
+                        className="px-3 py-1 text-xs text-gray-600 hover:text-gray-800"
+                      >
+                        <Send className="h-4 w-4 mr-1" />
+                        Relancer
+                      </button>
+                      <button className="h-8 w-8 flex items-center justify-center bg-gray-100 rounded-full">
+                        <ChevronRight className="h-4 w-4 text-gray-500" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {unpaidInvoices.length === 0 && (
+                <div className="text-center py-8 text-gray-500">Aucune facture impayée</div>
+              )}
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </div><div className="bg-gray-50"><Page /></div></>
+    
   );
-}
+};
+
+export default Index;
