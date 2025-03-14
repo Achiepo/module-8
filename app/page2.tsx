@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { format } from 'date-fns';
+import { format, formatDate } from 'date-fns';
 import { CreditCard, Wallet, Smartphone } from 'lucide-react';
-import { FaEye } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa'; // Importation des icônes
 
 // Sample data for recent payments
 const recentPayments = [
@@ -24,8 +24,6 @@ const PatientPaymentForm = () => {
     date: format(new Date(), 'yyyy-MM-dd'),
     notes: ''
   });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -39,6 +37,8 @@ const PatientPaymentForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    // Simulate API call
     setTimeout(() => {
       setLoading(false);
       alert("Paiement enregistré avec succès");
@@ -52,11 +52,27 @@ const PatientPaymentForm = () => {
     }, 1500);
   };
 
+  // Payment method selector component
   const PaymentMethodSelector = ({ selectedMethod, onChange }: { selectedMethod: string; onChange: (method: string) => void }) => {
     const methods = [
-      { id: 'card', name: 'Carte', icon: <CreditCard className="h-5 w-5" />, description: 'Paiement par carte bancaire' },
-      { id: 'cash', name: 'Espèces', icon: <Wallet className="h-5 w-5" />, description: 'Paiement en espèces' },
-      { id: 'mobile', name: 'Mobile Money', icon: <Smartphone className="h-5 w-5" />, description: 'Transfert via mobile' },
+      {
+        id: 'card',
+        name: 'Carte',
+        icon: <CreditCard className="h-5 w-5" />,
+        description: 'Paiement par carte bancaire',
+      },
+      {
+        id: 'cash',
+        name: 'Espèces',
+        icon: <Wallet className="h-5 w-5" />,
+        description: 'Paiement en espèces',
+      },
+      {
+        id: 'mobile',
+        name: 'Mobile Money',
+        icon: <Smartphone className="h-5 w-5" />,
+        description: 'Transfert via mobile',
+      },
     ];
 
     return (
@@ -67,9 +83,9 @@ const PatientPaymentForm = () => {
             <div
               key={method.id}
               className={`flex items-center gap-3 p-4 rounded-lg border transition-all duration-200 cursor-pointer hover:border-medical-300 ${selectedMethod === method.id
-                ? 'border-medical-500 bg-medical-50'
-                : 'border-gray-200'
-              }`}
+                  ? 'border-medical-500 bg-medical-50'
+                  : 'border-gray-200'
+                }`}
               onClick={() => onChange(method.id)}
             >
               <div
@@ -91,36 +107,16 @@ const PatientPaymentForm = () => {
     );
   };
 
-  const convertToXOF = (amount: number): string => {
-    return `${amount.toFixed(2)} CFA`;
-  };
-
-  const getStatusBadge = (status: string) => {
-    const statusColor = status === 'Payée' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
-    return <span className={`text-xs px-3 py-1 rounded-full ${statusColor}`}>{status}</span>;
-  };
-
-  const getPaymentMethodIcon = (method: string) => {
-    switch (method) {
-      case 'card': return <CreditCard className="h-5 w-5" />;
-      case 'cash': return <Wallet className="h-5 w-5" />;
-      case 'mobile': return <Smartphone className="h-5 w-5" />;
-      default: return null;
+    function convertToXOF(amount: number): React.ReactNode {
+        throw new Error('Function not implemented.');
     }
-  };
 
-  const openDialog = (payment: Payment) => {
-    setSelectedPayment(payment);
-    setIsDialogOpen(true);
-  };
-
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedPayment(null);
-  };
+    function openDialog(payment: { id: number; patient: string; service: string; amount: number; date: string; method: string; status: string; }): void {
+        throw new Error('Function not implemented.');
+    }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto  rounded-lg space-y-8">
+    <div className="p-6 max-w-6xl mx-auto bg-white shadow-lg rounded-lg space-y-8">
       <div className="flex gap-8">
 
         {/* Enregistrer Paiement Card */}
@@ -205,7 +201,7 @@ const PatientPaymentForm = () => {
               ></textarea>
             </div>
 
-            <button type="submit" disabled={loading} className="w-full md:w-auto mx-35 bg-blue-600 hover: bg-blue-300 text-white rounded-md focus:outline-none">
+            <button type="submit" disabled={loading} className="w-full md:w-auto mx-45 bg-blue-600 hover:bg-medical-700 text-white px-4 py-2 rounded-md focus:outline-none">
               Enregistrer le paiement
             </button>
           </form>
@@ -214,95 +210,107 @@ const PatientPaymentForm = () => {
         {/* Paiement Récent Card */}
         <div className="w-1/2 p-6 bg-white shadow-lg rounded-lg space-y-8">
           <h3 className="text-2xl font-semibold text-gray-800">Paiements récents</h3>
-          <div className="rounded-lg p-8 mx-4 overflow-hidden w-full border bg-white">
-            <table className="min-w-full table-auto border-collapse text-sm text-center">
-              <thead className="bg-gray-60">
-                <tr>
-                  <th className="font-medium px-3 py-2">Patient</th>
-                  <th className="font-medium px-3 py-2">Service</th>
-                  <th className="font-medium px-3 py-2">Montant</th>
-                  <th className="font-medium px-3 py-2">Date</th>
-                  <th className="font-medium px-3 py-2">Méthode</th>
-                  <th className="font-medium px-3 py-2">Statut</th>
-                  <th className="font-medium px-3 py-2 w-[50px]"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentPayments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-3 py-2">{payment.patient}</td>
-                    <td className="px-3 py-2">{payment.service}</td>
-                    <td className="px-3 py-2">{convertToXOF(payment.amount)}</td>
-                    <td className="px-3 py-2">{format(new Date(payment.date), 'yyyy-MM-dd')}</td>
-                    <td className="px-3 py-2">
-                      <div className="flex items-center gap-2 justify-center">
-                        {getPaymentMethodIcon(payment.method)}
-                        <span className="text-xs capitalize">{payment.method}</span>
+          <button
+                    onClick={() => alert("Voir tous les paiements (fonctionnalité à venir)")}
+                    className="border border-gray-300 text-xs py-2 px-4 rounded-md bg-transparent hover:bg-gray-100 ml-4">
+                    Voir tous
+                  </button>
+                </div>
+          
+                <div className="rounded-lg p-8 mx-4 overflow-hidden w-full border bg-white">
+                  <table className="min-w-full table-auto border-collapse text-sm text-center">
+                    <thead className="bg-gray-60">
+                      <tr>
+                        <th className="font-medium px-3 py-2">Patient</th>
+                        <th className="font-medium px-3 py-2">Service</th>
+                        <th className="font-medium px-3 py-2">Montant</th>
+                        <th className="font-medium px-3 py-2">Date</th>
+                        <th className="font-medium px-3 py-2">Méthode</th>
+                        <th className="font-medium px-3 py-2">Statut</th>
+                        <th className="font-medium px-3 py-2 w-[50px]"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentPayments.map((payment) => (
+                        <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-3 py-2">{payment.patient}</td>
+                          <td className="px-3 py-2">{payment.service}</td>
+                          <td className="px-3 py-2">{convertToXOF(payment.amount)}</td>
+                          <td className="px-3 py-2">{formatDate(payment.date)}</td>
+                          <td className="px-3 py-2">
+                            <div className="flex items-center gap-2 justify-center">
+                              {setPaymentMethod(payment.method)}
+                              <span className="text-xs capitalize">{payment.method}</span>
+                            </div>
+                          </td>
+                          <td className="px-3 py-2">{getStatusBadge(payment.status)}</td>
+                          <td className="px-3 py-2">
+                            <div className="flex justify-start gap-2">
+                              {/* Bouton Détails */}
+                              <button
+                                onClick={() => openDialog(payment)}
+                                className="flex items-center px-4 py-2 text-sm bg-gray-50 hover:bg-gray-100 space-x-2">
+                                <FaEye />
+                                <span>Détails</span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+          
+          
+                {/* Modal (Dialog) */}
+                {isDialogOpen && selectedPayment && (
+                  <div className="fixed inset-0 bg-gray-400 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-4 rounded-lg max-w-sm w-full">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-semibold">Détails du paiement</h3>
+                        <button onClick={closeDialog} className="text-gray-500 text-lg">&times;</button>
                       </div>
-                    </td>
-                    <td className="px-3 py-2">{getStatusBadge(payment.status)}</td>
-                    <td className="px-3 py-2">
-                      <div className="flex justify-start gap-2">
-                        <button
-                          onClick={() => openDialog(payment)}
-                          className="flex items-center px-4 py-2 text-sm bg-gray-50 hover:bg-gray-100 space-x-2">
-                          <FaEye />
-                          <span>Détails</span>
-                        </button>
+                      <div className="mt-3 space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <p className="text-xs text-gray-500">Patient</p>
+                            <p className="font-medium text-sm">{selectedPayment.patient}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">Service</p>
+                            <p className="font-medium text-sm">{selectedPayment.service}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">Montant</p>
+                            <p className="font-medium text-sm">{convertToXOF(selectedPayment.amount)}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">Date</p>
+                            <p className="font-medium text-sm">{formatDate(selectedPayment.date)}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">Méthode de paiement</p>
+                            <div className="flex items-center gap-1.5 mt-1">
+                              {getPaymentMethodIcon(selectedPayment.method)}
+                              <span className="text-xs capitalize">{selectedPayment.method}</span>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">Statut</p>
+                            {getStatusBadge(selectedPayment.status)}
+                          </div>
+                        </div>
+                        <button className="mt-4 w-full bg-medical-600 text-white py-2 rounded-md">Fermer</button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Modal */}
-      {isDialogOpen && selectedPayment && (
-        <div className="fixed inset-0 bg-gray-400 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-4 rounded-lg max-w-sm w-full">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Détails du paiement</h3>
-              <button onClick={closeDialog} className="text-gray-500 text-lg">&times;</button>
-            </div>
-            <div className="mt-3 space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <p className="text-xs text-gray-500">Patient</p>
-                  <p className="font-medium text-sm">{selectedPayment.patient}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Service</p>
-                  <p className="font-medium text-sm">{selectedPayment.service}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Montant</p>
-                  <p className="font-medium text-sm">{convertToXOF(selectedPayment.amount)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Date</p>
-                  <p className="font-medium text-sm">{format(new Date(selectedPayment.date), 'yyyy-MM-dd')}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Méthode de paiement</p>
-                  <div className="flex items-center gap-1.5 mt-1">
-                    {getPaymentMethodIcon(selectedPayment.method)}
-                    <span className="text-xs capitalize">{selectedPayment.method}</span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Statut</p>
-                  {getStatusBadge(selectedPayment.status)}
-                </div>
+                )}
               </div>
-              <button onClick={closeDialog} className="mt-4 w-full bg-medical-600 text-white py-2 rounded-md">Fermer</button>
-            </div>
-          </div>
+              
+
+          
         </div>
-      )}
+      </div>
     </div>
   );
 };

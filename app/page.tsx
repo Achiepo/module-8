@@ -1,25 +1,59 @@
 "use client";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import Head from "next/head";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { ChartPie, CreditCard, TrendingUp, Users, AlertCircle, Send, ChevronRight } from "lucide-react";
 import Page from "@/components/paiement";
 
+// Enregistrement des composants nécessaires pour Chart.js
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-// Data pour le graphique des revenus
-const data = [
-  { name: "Jan", revenue: 4000 },
-  { name: "Fév", revenue: 3000 },
-  { name: "Mar", revenue: 2000 },
-  { name: "Avr", revenue: 2780 },
-  { name: "Mai", revenue: 1890 },
-  { name: "Juin", revenue: 2390 },
-  { name: "Juil", revenue: 3490 },
-  { name: "Août", revenue: 4000 },
-  { name: "Sep", revenue: 5000 },
-  { name: "Oct", revenue: 4500 },
-  { name: "Nov", revenue: 5200 },
-  { name: "Déc", revenue: 6000 },
-];
+// Données pour le graphique en aire (Ventes mensuelles)
+const salesData = {
+  labels: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
+  datasets: [
+    {
+      label: "Ventes (en FCFA)",
+      data: [2500, 3000, 3500, 4000, 4500, 5000, 6000, 6500, 7000, 7500, 8000, 8500], // Remplace ces valeurs par tes données réelles
+      fill: true,
+      borderColor: "rgba(75, 192, 192, 1)",
+      tension: 0.4,
+      backgroundColor: "rgba(75, 192, 192, 0.2)",
+    },
+  ],
+};
 
+// Options du graphique en aire
+const salesOptions = {
+  responsive: true,
+  plugins: {
+    title: {
+      display: true,
+      text: "Graphique des Ventes Mensuelles (en FCFA)",
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: {
+        callback: (value: any) => `${value} FCFA`,
+      },
+    },
+  },
+};
+
+// Données pour le graphique des revenus mensuels
+const revenueData = {
+  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  datasets: [
+    {
+      data: [0, 1, 5, 2, 2, 5, 6, 6, 5, 7, 4, 3], // Assure-toi d'ajouter une donnée pour chaque mois
+    },
+  ],
+};
+
+// Cartes statistiques (Exemple de cartes avec des icônes et des chiffres)
 const periods = ["Jour", "Semaine", "Mois", "Année"];
 
 const unpaidInvoices = [
@@ -36,124 +70,85 @@ const Index = () => {
   };
 
   return (
-    <><div className="min-h-screen bg-gray-50 flex flex-col">
-      <main className="flex-1 container px-4 md:px-6 pb-12 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Gestion de Facturation</h1>
-            <p className="text-gray-500 mt-1">Automatisez le suivi des paiements et des finances</p>
-          </div>
-        </div>
+    <>
+      <Head>
+        <title>Graphiques de Ventes et Revenus</title>
+        <meta name="description" content="Graphiques des ventes et des revenus mensuels" />
+      </Head>
 
-        {/* Cartes Statistiques */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="flex items-center mb-4">
-              <TrendingUp className="h-6 w-6 text-green-500" />
-              <h2 className="ml-2 text-xl font-semibold text-gray-900">Revenus ce mois</h2>
-            </div>
-            <p className="text-2xl font-bold text-gray-900">24 500 FCFA</p>
-            <p className="text-gray-500">125 transactions</p>
-            <div className="mt-4 text-green-500">
-              <span>+12%</span> par rapport au mois dernier
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <main className="flex-1 container px-4 md:px-6 pb-12 max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Gestion de Facturation et Ventes</h1>
+              <p className="text-gray-500 mt-1">Automatisez le suivi des paiements et des finances</p>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="flex items-center mb-4">
-              <CreditCard className="h-6 w-6 text-red-500" />
-              <h2 className="ml-2 text-xl font-semibold text-gray-900">Factures en attente</h2>
-            </div>
-            <p className="text-2xl font-bold text-gray-900">3 450 FCFA</p>
-            <p className="text-gray-500">8 factures impayées</p>
-            <div className="mt-4 text-red-500">
-              <span>-2%</span> par rapport au mois dernier
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="flex items-center mb-4">
-              <Users className="h-6 w-6 text-blue-500" />
-              <h2 className="ml-2 text-xl font-semibold text-gray-900">Nouveaux patients</h2>
-            </div>
-            <p className="text-2xl font-bold text-gray-900">35</p>
-            <p className="text-gray-500">Ce mois-ci</p>
-            <div className="mt-4 text-blue-500">
-              <span>+8</span> par rapport au mois dernier
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="flex items-center mb-4">
-              <ChartPie className="h-6 w-6 text-yellow-500" />
-              <h2 className="ml-2 text-xl font-semibold text-gray-900">Taux de recouvrement</h2>
-            </div>
-            <p className="text-2xl font-bold text-gray-900">92%</p>
-            <p className="text-gray-500">Objectif: 95%</p>
-            <div className="mt-4 text-yellow-500">
-              <span>+3%</span> par rapport au mois dernier
-            </div>
-          </div>
-        </div>
-
-        {/* Graphique des Revenus et Factures Impayées sur la même ligne */}
-        <div className="flex gap-6 mb-8">
-          {/* Graphique des Revenus */}
-          <div className="flex-1 p-6 bg-white shadow-lg rounded-lg">
-            <div className="flex justify-between items-center mb-5">
-              <h3 className="text-xl font-semibold text-gray-900">Évolution des revenus</h3>
-              <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
-                {periods.map((period) => (
-                  <button
-                    key={period}
-                    onClick={() => setActivePeriod(period)}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${activePeriod === period
-                        ? "bg-blue-500 text-white"
-                        : "text-gray-500 hover:text-gray-700"}`}
-                  >
-                    {period}
-                  </button>
-                ))}
+          {/* Cartes Statistiques */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="flex items-center mb-4">
+                <TrendingUp className="h-6 w-6 text-green-500" />
+                <h2 className="ml-2 text-xl font-semibold text-gray-900">Revenus ce mois</h2>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">24 500 FCFA</p>
+              <p className="text-gray-500">125 transactions</p>
+              <div className="mt-4 text-green-500">
+                <span>+12%</span> par rapport au mois dernier
               </div>
             </div>
 
-            {/* Graphique en aire */}
-            <div className="h-[300px] w-full">
-              <svg width="100%" height="100%" viewBox="0 0 500 300">
-                {/* Remplissage de l'aire */}
-                <path
-                  fill="rgba(14, 165, 233, 0.3)"
-                  d="M0 250 L40 240 L80 210 L120 180 L160 190 L200 230 L240 240 L280 250 L320 230 L360 200 L400 180 L440 160 L480 130 L500 120 L500 300 L0 300 Z" />
-                {/* Contour du graphique */}
-                <path
-                  fill="none"
-                  stroke="#0ea5e9"
-                  strokeWidth="2"
-                  d="M0 250 L40 240 L80 210 L120 180 L160 190 L200 230 L240 240 L280 250 L320 230 L360 200 L400 180 L440 160 L480 130 L500 120" />
-                {/* Mois */}
-                <g className="text-gray-500 text-xs">
-                  {data.map((point, index) => (
-                    <text key={index} x={40 + index * 40} y="270" fill="gray" textAnchor="middle">
-                      {point.name}
-                    </text>
-                  ))}
-                </g>
-                {/* Valeurs de l'axe des ordonnées */}
-                <g className="text-gray-500 text-xs">
-                  {Array.from({ length: 6 }, (_, i) => 1000 * i).map((value, index) => (
-                    <text
-                      key={index}
-                      x="10"
-                      y={250 - index * 30}
-                      fill="gray"
-                      transform="rotate(270 10 250)"
-                      textAnchor="middle"
-                    >
-                      {value}K
-                    </text>
-                  ))}
-                </g>
-              </svg>
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="flex items-center mb-4">
+                <CreditCard className="h-6 w-6 text-red-500" />
+                <h2 className="ml-2 text-xl font-semibold text-gray-900">Factures en attente</h2>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">3 450 FCFA</p>
+              <p className="text-gray-500">8 factures impayées</p>
+              <div className="mt-4 text-red-500">
+                <span>-2%</span> par rapport au mois dernier
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="flex items-center mb-4">
+                <Users className="h-6 w-6 text-blue-500" />
+                <h2 className="ml-2 text-xl font-semibold text-gray-900">Nouveaux patients</h2>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">35</p>
+              <p className="text-gray-500">Ce mois-ci</p>
+              <div className="mt-4 text-blue-500">
+                <span>+8</span> par rapport au mois dernier
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="flex items-center mb-4">
+                <ChartPie className="h-6 w-6 text-yellow-500" />
+                <h2 className="ml-2 text-xl font-semibold text-gray-900">Taux de recouvrement</h2>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">92%</p>
+              <p className="text-gray-500">Objectif: 95%</p>
+              <div className="mt-4 text-yellow-500">
+                <span>+3%</span> par rapport au mois dernier
+              </div>
+            </div>
+          </div>
+
+          {/* Graphiques des Revenus et Ventes */}
+          <div className="flex gap-6 mb-8">
+            <div className="flex-1 p-6 bg-white shadow-lg rounded-lg">
+              <h3 className="text-xl font-semibold text-gray-900">Évolution des Ventes Mensuelles</h3>
+              <Line data={salesData} options={salesOptions} />
+            </div>
+
+            <div className="flex-1 p-6 bg-white shadow-lg rounded-lg">
+              <h3 className="text-xl font-semibold text-gray-900">Évolution des Revenus</h3>
+              <div className="h-[300px] w-full">
+                {/* Tu peux personnaliser ici un autre graphique ou SVG pour les revenus */}
+                <Line data={revenueData} options={{ responsive: true }} />
+              </div>
             </div>
           </div>
 
@@ -169,13 +164,9 @@ const Index = () => {
               </button>
             </div>
 
-            {/* Liste des factures impayées */}
             <div className="space-y-4">
               {unpaidInvoices.map((invoice) => (
-                <div
-                  key={invoice.id}
-                  className="p-4 border-l-4 border-amber-400 hover:shadow-md transition-all rounded-lg"
-                >
+                <div key={invoice.id} className="p-4 border-l-4 border-amber-400 hover:shadow-md transition-all rounded-lg">
                   <div className="flex justify-between items-center">
                     <div className="flex-1">
                       <div className="flex items-center">
@@ -190,10 +181,7 @@ const Index = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleSendReminder(invoice.id)}
-                        className="px-3 py-1 text-xs text-gray-600 hover:text-gray-800"
-                      >
+                      <button onClick={() => handleSendReminder(invoice.id)} className="px-3 py-1 text-xs text-gray-600 hover:text-gray-800">
                         <Send className="h-4 w-4 mr-1" />
                         Relancer
                       </button>
@@ -204,17 +192,23 @@ const Index = () => {
                   </div>
                 </div>
               ))}
-
-              {unpaidInvoices.length === 0 && (
-                <div className="text-center py-8 text-gray-500">Aucune facture impayée</div>
-              )}
+              {unpaidInvoices.length === 0 && <div className="text-center py-8 text-gray-500">Aucune facture impayée.</div>}
             </div>
           </div>
-        </div>
-      </main>
-    </div><div className="bg-gray-50"><Page /></div></>
-    
+        </main>
+      </div>
+      <div className="bg-gray-50"><Page /></div>
+    </>
   );
 };
 
 export default Index;
+    
+    
+    
+    
+    
+    
+    
+    
+  
